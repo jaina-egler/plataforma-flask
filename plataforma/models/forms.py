@@ -7,6 +7,5 @@ class UserLogin(FlaskForm):
     password=PasswordField('senha',validators=[DataRequired()])
 
 class UserCreate(FlaskForm):
-    s
-    password = PasswordField(min=8, max= 30, ,[InputRequired(), EqualTo('confirm', message='As senhas devem ser iguais!')])
+    password = PasswordField()
     confirm  = PasswordField()

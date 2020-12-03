@@ -1,8 +1,8 @@
-from flask import render_template
+from flask import render_template, request
 
 from plataforma import app
 
-from plataforma.models.forms import UserLogin
+from plataforma.models.forms import UserLogin, UserCreate
 
 @app.route("/")
 @app.route("/login", methods=["POST","GET"])
