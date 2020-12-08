@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>index</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    {% block content %}
+    welcome
+    <a href="">Crie conta</a>
+    <a href="/login">Login 1</a>
+    <a href="/newUser">CRIAR</a>
+    
+    {% for user in user %}
+    <h1>{{user.id}}</h1>
+    <h1>{{user.nameAdmin}}</h1>
+    {% endfor %}
+
+    <div class="container">
+        <div class="col-md-6 offset-md-3">
+            <form action="{{url_for('login')}}" method="POST">
+                {{form.csrf_token}}
+                <div class="form-group">
+
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Nome completo:</label>
+                        <input name='user' style=" border-radius: 0;border-color: #5A90FB;height: 52px" type="text"
+                            class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name='name'>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">senmh</label>
+                        <input name='senha' style=" border-radius: 0;border-color: #5A90FB;height: 52px" type="password"
+                            class="form-control" id="exampleInputE
+
+
+            </div>
+        </div>
+        <div class="col-md-6 offset-md-3">
+         <div class="form-group">             
+             <button type="button" class="btn btn-link" style="font-size: 22px;">Esqueci minha senha</button>
+            <button type="submit" class="btn btn-primary"
+                style="font-size: 22px;width: 270px;
+                height: 50px;  border-radius: 0; background-color: #5A90FB; border-color: #5A90FB;">Login</button>
+    </div>
+</div>
+</div>
+{% endblock %}
+</body>
+</html>
