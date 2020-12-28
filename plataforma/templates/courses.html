@@ -1,0 +1,27 @@
+{% extends 'base-forms.html' %}
+{% block title %}CURSOS{% endblock %}
+{% block content %}
+{{courses.id}}
+{% for topico in topicos %}
+<h3>{{topicos.topico}}</h3>
+{% endfor %}
+<h1>EU EXISTOdd</h1>
+{% endblock %}
+select * from cursos;
+
+INSERT INTO `plataforma`.`cursos`
+(
+`titulo`,
+`descricao`,
+`categorias_id`,
+`data_publicacao`,
+`duracao`)
+VALUES
+(
+'Curso de título longo de orientação a objetos com C# Douglinhas Mil Grau',
+'Curso top',
+1,
+now(),
+'05:00');
+
+alter table cursos modify column titulo varchar(100)

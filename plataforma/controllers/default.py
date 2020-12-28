@@ -1,56 +1,173 @@
-'''DELETAR MEU USER E COMENTARS'''
+# DELETAR MEU USER E COMENTAR
 
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from plataforma import app, login_manager, login_required,login_user
+from plataforma import app, cursor, conn, MySQL
+from plataforma.models import codigos
 
-from plataforma.models.forms import UserLogin, UserCreate
+""" password = generate_password_hash("admin")
 
-from plataforma.models import AdminUsers
+cursor.execute("INSERT INTO `plataforma`.`instrutores` ( `nome`, `foto`, `senha`) VALUES ( 'admin', 'admin', '{0}');".foha rmat(password))
+conn.commit()
+print(password) """
 
-from werkzeug.security import generate_password_hash,check_password_hash
 
-#Rota de index, seria bom criar uma página simples pra ela
+
+# Rota de index, seria bom criar uma página simples pra ela
+
 @app.route("/")
 def index():
-    return render_template('index.html')
+    cursor.execute('select id, titulo, descricao, duracao from cursos;')
+    cursos = cursor.fetchall()
+    i = 0
+    # for item in cursos:
+    #
+    #     cursosF.
+    #     print(cursosF)
+    cursosF = {
+        cursos
+    }
+    return render_template('index.html', cursos=cursosF)
 
-@app.route("/login", methods=["POST","GET"])
+
+# rota das aulas
+@app.route("/video", methods=["POST", "GET"])
+def video():
+    cursor.execute(codigos['SQL_BUSCA_VIDEO'].format(5))
+    cursor.execute(codigos['SQL_BUSCA_VIDEO'].format(5))
+    videos = cursor.fetchone()
+    videos = {
+        'id': videos[0],
+        'conteudo': videos[3]
+    }
+    print(videos['conteudo'])
+    return render_template('conteudo.html', videos=videos)
+
+
+# Rota dos cursos,so teste por enquanto
+@app.route('/courses')
+def courses():
+    if False:  # 'user_logado' not in session or session['admin_logado'] == None:
+        return redirect("/login")
+    else:
+        # criar o sql e pensar na lógica
+        cursor.execute('select * from cursos join topicos on cursos.id = topicos.cursos_id where cursos.id = 1;')
+        courses = cursor.fetchall()
+        print(courses)
+        courses = {
+            'id': courses[0]
+            # 'titulo': courses[1],
+            # 'descricao':courses[2],
+        }
+    return render_template('courses.html', courses=courses, )  # topicos=topicos)
+
+
+# Rota das informações dos cursos para se inscrever
+@app.route('/courses/<int:id>')
+def coursesId():
+    return render_template('courses.html')
+
+
+# Rota dos cursos do usuário
+@app.route('/myCourses')
+def myCourses():
+    fiz = True
+    return render_template('meusCursos.html', fiz=fiz)
+
+
+# ROTA DE LOGIN DE USUÁRIOS COMUNS
+@app.route("/login", methods=["POST", "GET"])
 def login():
-    user.email = request.form["email"]
-    user.password = request.form["password"]
-    return render_template('login.html', form=form)
+    try:
+        if request.method == 'POST':
+            user = request.form["email"]
+            password_form = request.form["password"]
+            # falta exceção se não existir
+            cursor.execute(codigos['SQL_BUSCA_USER'].format(user))
+            user = cursor.fetchone()
+            print(user)
+            if (user == None):
+                pass
+            else:
+                if not check_password_hash(user[3], password_form):
+                    print('errou')
+                    print(user[3])
+                    print(password_form)
+                    flash('Senha ou usuário errados! Tente novamente')
+                    return (redirect('/login'))
 
-@app.route("/newUser", methods=["POST","GET"])
+                else:
+                    session['user_logado'] = user
+                    flash(user + ' logou com sucesso!')
+                    return (redirect('/myCourses'))
+    except:
+        flash('Esse usuário não existe. Crie uma conta ')
+        return (redirect('/login'))
+    return render_template('login.html')
+
+
+# ROTA DE CRIAÇÃO DE USUÁRIO
+@app.route("/newUser", methods=["POST", "GET"])
 def newUser():
-    if request.method == 'POST':
-        user = User()
-        user.name = request.form["name"]
-        user.email = request.form["email"]
-        #verificar email repetido
-        password = request.form["password"]
-        confirm = request.form["password2"]
-        if(password == confirm):
-            user.password = generate_password_hash(request.form["password"])
-            '''db.session.add(user)
-            db.session.commit() VER INSERINDO USUÁRIOS DO CURSO2'''
-            return(url_for('login'))
-        else:
-            #LOGICA PARA MANDAR ALERT
-            pass
+    try:
+        if request.method == 'POST':
+            foto = 'null'
+            name = request.form["name"]
+            email = request.form["email"]
+            # verificar email repetido
+            password = request.form["password"]
+            confirm = request.form["confirm"]
+            print(name, email, password, confirm)
+            if password == confirm:
+                password = generate_password_hash(password)
+                cursor.execute(codigos['SQL_CREATE_USER'].format(name, email, password, foto))
+                conn.commit()
+                return (url_for('login'))
+            else:
+                flash('As senhas estão diferentes!')
+    except MySQL.__hash__(TypeError):
+        flash('As senhas estão diferentes!')
+        return "Algo deu errado"
+
     return render_template('criar-conta.html')
 
-#PAGINA PARA APENAS ADMINS VEREM, NECESSITA MELHORIAS
-@login_manager.user_loader
-def current_user(user_id):
-    return AdminUser.query.get(user_id)
-@login_required
-@app.route('/adminLogin', methods=['GET','POST'])
-def adminLogin():
-    if request.method == "POST":
-        user = request.form["user"]
-        senha = request.form["senha"]
-        AdminUsers.query.filter_by(nameAdmin=user).first()
-    
-    return render_template('adminLogin.html')
 
+@app.route('/teste')
+def teste():
+    return render_template('base.html')
+
+
+# ROTA DE LOGIN DE USUÁRIOS GERENCIADORES
+@app.route("/loginAdmin", methods=["POST", "GET"])
+def loginAdmin():
+    if request.method == 'POST':
+        user = request.form["user"]
+        password_form = request.form["password"]
+        # falta exceção se não existir
+        cursor.execute(codigos['SQL_BUSCA_ADMIN'].format(user))
+        admin = cursor.fetchone()
+        if not check_password_hash(admin[3], password_form):
+            print('errou')
+            print(admin[3])
+            print(password_form)
+            flash('Senha ou usuário errados! Tente novamente')
+            return (redirect('/loginAdmin'))
+
+        else:
+            session['admin_logado'] = user
+            flash(user + ' logou com sucesso!')
+            return (redirect('/loginAdmin'))
+    return render_template('loginAdmin.html')
+
+
+@app.route("/logoutAdmin")
+def logoutAdmin():
+    session['admin_logado'] = None
+    flash("USUÁRIO DESLOGADO")
+    return redirect('/login')
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template("404.html")

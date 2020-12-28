@@ -1,0 +1,36 @@
+{% extends 'base-forms.html' %}
+{% block title %}Área restrita{% endblock %}
+{% block content %}
+
+{% block body %}{% endblock %}
+<div class="col-md-6 offset-md-3">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <form action="" method="POST">
+        <div class="form-group">
+            <label>Usuário</label>
+            <input name = 'user'>
+
+        </div>
+        <div class="form-group">
+            <label >Senha:</label>
+            <input type="password" name = 'password'>
+        </div>
+</div>
+<div class="col-md-6 offset-md-3">
+    <div class="form-group">
+        <button type="button" class="btn btn-link" style="font-size: 22px;">Esqueci minha senha</button>
+        <button type="submit" class="btn btn-primary"
+                style="font-size: 22px;width: 270px;
+                height: 50px;  border-radius: 0; background-color: #5A90FB; border-color: #5A90FB;">Login</button>
+    </div>
+</div>
+</form>
+
+{% endblock %}
+ 

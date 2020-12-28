@@ -1,28 +1,25 @@
 {% extends 'base-forms.html' %}
-
-
+{% block title %}Login{% endblock %}
 {% block content %}
-   <div class="container">
+
         <div class="col-md-6 offset-md-3">
+             {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+            <div class="alert alert-danger" role="alert">{{ message }}<a href="url('/criarConta')">aqui</a></div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
             <form action="" method="POST">
-                {{form.csrf_token}}
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email:</label>
-                    {{form.username(class="form-control", placeholder="Digite seu usuário")}}
-                    {% if form.errors.username %}
-                    <div class="alert alert-warning" role="alert">
-                        O usuário e senha devem ser válidos!
-                      </div>
-                    {% endif%}
+                    <label>Email:</label>
+                   <input name = 'email'>
+
+
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Senha:</label>
-                    {{form.password(class="form-control", placeholder="Digite sua senha")}}
-                        {% if form.errors.password %}
-                    <div class="alert alert-warning" role="alert">
-                        O usuário e senha devem ser válidos!
-                      </div>
-                    {% endif%}
+                    <label >Senha:</label>
+ <input type="password" name = 'password'>
             </div>
         </div>
         <div class="col-md-6 offset-md-3">
@@ -33,7 +30,7 @@
                 height: 50px;  border-radius: 0; background-color: #5A90FB; border-color: #5A90FB;">Login</button>
     </div>
 </div>
-</div>
+</form>
 
 {% endblock %}
  
